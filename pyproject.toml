@@ -1,16 +1,38 @@
 [project]
-name = "pythonproject13"
+name = "DB_Kurs"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Your Name",email = "you@example.com"}
+    {name = "Yuliya",email = "yulechka944992@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
 ]
 
+[tool.poetry]
+package-mode = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "flake8 (>=7.3.0,<8.0.0)",
+    "black (>=26.5.1,<27.0.0)",
+    "isort (>=8.0.1,<9.0.0)",
+    "mypy (>=2.3.0,<3.0.0)"
+]
+
+[tool.black]
+line-length = 119
+exclude = """ \\.git """
+
+[tool.isort]
+line_length = 119
+
+[tool.mypy]
+disallow_untyped_defs = true
+warn_return_any = true
+exclude = 'venv'
