@@ -9,7 +9,8 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "requests (>=2.34.2,<3.0.0)",
-    "pytest (>=9.1.1,<10.0.0)"
+    "pytest (>=9.1.1,<10.0.0)",
+    "psycopg2-binary (>=2.9.12,<3.0.0)"
 ]
 
 [tool.poetry]
