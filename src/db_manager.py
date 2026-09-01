@@ -3,6 +3,7 @@ from typing import List, Dict
 import psycopg2
 from config import config
 
+
 class DBManager:
     def __init__(self):
         params = config()
@@ -18,11 +19,14 @@ class DBManager:
         if result:
             return result[0]
 
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
             INSERT INTO countries (name, bounds_min_lat, bounds_max_lat, bounds_min_lon, bounds_max_lon)
             VALUES (%s, %s, %s, %s, %s)
             RETURNING id
-        """, (name, bounds[0], bounds[1], bounds[2], bounds[3]))
+        """,
+            (name, bounds[0], bounds[1], bounds[2], bounds[3]),
+        )
 
         country_id = self.cursor.fetchone()[0]
         self.conn.commit()
@@ -32,22 +36,25 @@ class DBManager:
         """Сохранить самолеты"""
         count = 0
         for plane in aircrafts:
-            self.cursor.execute("""
+            self.cursor.execute(
+                """
                 INSERT INTO aeroplanes (
                     icao24, callsign, origin_country, longitude, latitude,
                     velocity, heading, on_ground, country_id
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (
-                plane.get('icao24'),
-                plane.get('callsign', ''),
-                plane.get('origin_country', 'Unknown'),
-                plane.get('longitude'),
-                plane.get('latitude'),
-                plane.get('velocity'),
-                plane.get('heading'),
-                plane.get('on_ground', False),
-                country_id
-            ))
+            """,
+                (
+                    plane.get("icao24"),
+                    plane.get("callsign", ""),
+                    plane.get("origin_country", "Unknown"),
+                    plane.get("longitude"),
+                    plane.get("latitude"),
+                    plane.get("velocity"),
+                    plane.get("heading"),
+                    plane.get("on_ground", False),
+                    country_id,
+                ),
+            )
             count += 1
 
         self.conn.commit()
@@ -63,7 +70,7 @@ class DBManager:
             ORDER BY count DESC
         """)
 
-        return [{'country': row[0], 'count': row[1]} for row in self.cursor.fetchall()]
+        return [{"country": row[0], "count": row[1]} for row in self.cursor.fetchall()]
 
     def get_all_aeroplanes(self) -> List[Dict]:
         """Список всех самолетов в воздухе"""
@@ -75,12 +82,12 @@ class DBManager:
 
         return [
             {
-                'icao24': row[0],
-                'callsign': row[1],
-                'origin_country': row[2],
-                'velocity': row[3],
-                'latitude': row[4],
-                'longitude': row[5]
+                "icao24": row[0],
+                "callsign": row[1],
+                "origin_country": row[2],
+                "velocity": row[3],
+                "latitude": row[4],
+                "longitude": row[5],
             }
             for row in self.cursor.fetchall()
         ]
@@ -100,33 +107,32 @@ class DBManager:
         """Самолеты со скоростью выше средней"""
         avg_speed = self.get_avg_speed()
 
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
                     SELECT icao24, callsign, velocity
                     FROM aeroplanes
                     WHERE velocity > %s AND on_ground = false
                     ORDER BY velocity DESC
-                """, (avg_speed,))
+                """,
+            (avg_speed,),
+        )
 
-        return [
-            {'icao24': row[0], 'callsign': row[1], 'velocity': row[2]}
-            for row in self.cursor.fetchall()
-        ]
+        return [{"icao24": row[0], "callsign": row[1], "velocity": row[2]} for row in self.cursor.fetchall()]
 
     def get_aeroplanes_with_keyword(self, keyword: str) -> List[Dict]:
         """Поиск по ключевому слову в позывном"""
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
                     SELECT icao24, callsign, origin_country
                     FROM aeroplanes
                     WHERE callsign ILIKE %s AND on_ground = false
-                """, (f'%{keyword}%',))
+                """,
+            (f"%{keyword}%",),
+        )
 
-        return [
-            {'icao24': row[0], 'callsign': row[1], 'origin_country': row[2]}
-            for row in self.cursor.fetchall()
-        ]
+        return [{"icao24": row[0], "callsign": row[1], "origin_country": row[2]} for row in self.cursor.fetchall()]
 
     def close(self):
         """Закрыть соединение"""
         self.cursor.close()
         self.conn.close()
-        

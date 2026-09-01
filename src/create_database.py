@@ -11,17 +11,17 @@ class CreateDatabase:
 
         # 1. Подключаемся к системной базе postgres
         conn = psycopg2.connect(
-            host=params['host'],
-            user=params['user'],
-            password=params['password'],
-            port=params['port'],
-            database='postgres'
+            host=params["host"],
+            user=params["user"],
+            password=params["password"],
+            port=params["port"],
+            database="postgres",
         )
         conn.autocommit = True
         cursor = conn.cursor()
 
         # 2. Проверяем, существует ли база aircraft_tracker
-        db_name = params['database']
+        db_name = params["database"]
         cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = '{db_name}'")
         exists = cursor.fetchone()
 

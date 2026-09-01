@@ -16,15 +16,11 @@ class TestAPIAeroplanes:
 
     def test_get_country_bounds_success(self, api):
         """Тест успешного получения границ страны"""
-        with patch('src.api_aeroplanes.requests.get') as mock_get:
+        with patch("src.api_aeroplanes.requests.get") as mock_get:
 
             mock_response = MagicMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = [
-                {
-                    "boundingbox": ["55.0", "60.0", "30.0", "40.0"]
-                }
-            ]
+            mock_response.json.return_value = [{"boundingbox": ["55.0", "60.0", "30.0", "40.0"]}]
             mock_get.return_value = mock_response
 
             bounds = api.get_country_bounds("Russia")
@@ -43,7 +39,7 @@ class TestAPIAeroplanes:
 
     def test_get_country_bounds_country_not_found(self, api):
         """Тест: страна не найдена"""
-        with patch('src.api_aeroplanes.requests.get') as mock_get:
+        with patch("src.api_aeroplanes.requests.get") as mock_get:
             mock_response = MagicMock()
             mock_response.json.return_value = []
             mock_response.raise_for_status.return_value = None
@@ -56,13 +52,13 @@ class TestAPIAeroplanes:
 
     def test_get_country_not_bounds(self, api):
         """Страна найдена, но без bounding box"""
-        with patch('src.api_aeroplanes.requests.get') as mock_get:
+        with patch("src.api_aeroplanes.requests.get") as mock_get:
             mock_response = MagicMock()
             mock_response.json.return_value = [{"name": "Test"}]
             mock_response.raise_for_status.return_value = None
             mock_get.return_value = mock_response
 
-            with patch('builtins.print') as mock_print:
+            with patch("builtins.print") as mock_print:
                 bounds = api.get_country_bounds("Test")
 
                 assert bounds == []
@@ -70,10 +66,10 @@ class TestAPIAeroplanes:
 
     def test_get_country_bounds_request_exception(self, api):
         """Ошибка сети/API"""
-        with patch('src.api_aeroplanes.requests.get') as mock_get:
+        with patch("src.api_aeroplanes.requests.get") as mock_get:
             mock_get.side_effect = RequestException("Connection error")
 
-            with patch('builtins.print') as mock_print:
+            with patch("builtins.print") as mock_print:
                 bounds = api.get_country_bounds("Russia")
 
                 assert bounds == []
@@ -87,30 +83,24 @@ class TestAPIAeroplanes:
 
     def test_get_aircraft_by_bounds_success(self, api):
         """Успешное получение данных"""
-        with patch('src.api_aeroplanes.requests.get') as mock_get:
+        with patch("src.api_aeroplanes.requests.get") as mock_get:
             mock_response = MagicMock()
             mock_response.json.return_value = {
-                "states": [
-                    ["abc123", "TEST", "US", 123, 456, 10.0, 20.0, 1000, False, 200, 90, 5]
-                ]
+                "states": [["abc123", "TEST", "US", 123, 456, 10.0, 20.0, 1000, False, 200, 90, 5]]
             }
             mock_response.raise_for_status.return_value = None
             mock_get.return_value = mock_response
 
             result = api.get_aircraft_by_bounds(["55.0", "60.0", "30.0", "40.0"])
 
-            assert result == {
-                "states": [
-                    ["abc123", "TEST", "US", 123, 456, 10.0, 20.0, 1000, False, 200, 90, 5]
-                ]
-            }
+            assert result == {"states": [["abc123", "TEST", "US", 123, 456, 10.0, 20.0, 1000, False, 200, 90, 5]]}
 
     def test_get_aircraft_by_bounds_request_exception(self, api):
         """Ошибка API"""
-        with patch('src.api_aeroplanes.requests.get') as mock_get:
+        with patch("src.api_aeroplanes.requests.get") as mock_get:
             mock_get.side_effect = RequestException("API error")
 
-            with patch('builtins.print') as mock_print:
+            with patch("builtins.print") as mock_print:
                 result = api.get_aircraft_by_bounds(["55.0", "60.0", "30.0", "40.0"])
 
                 assert result == {}
@@ -118,54 +108,51 @@ class TestAPIAeroplanes:
 
     def test_get_aircraft_by_country_success(self, api):
         """Успешное получение самолетов по стране"""
-        with patch.object(api, 'get_country_bounds') as mock_bounds:
-            with patch.object(api, 'get_aircraft_by_bounds') as mock_aircraft:
+        with patch.object(api, "get_country_bounds") as mock_bounds:
+            with patch.object(api, "get_aircraft_by_bounds") as mock_aircraft:
                 mock_bounds.return_value = ["55.0", "60.0", "30.0", "40.0"]
                 mock_aircraft.return_value = {
-                    "states": [
-                        ["abc123", "TEST", "US", 123, 456, 10.0, 20.0, 1000, False, 200, 90, 5]
-                    ]
+                    "states": [["abc123", "TEST", "US", 123, 456, 10.0, 20.0, 1000, False, 200, 90, 5]]
                 }
 
                 result = api.get_aircraft_by_country("Russia")
 
-                expected = [{
-                    "icao24": "abc123",
-                    "callsign": "TEST",
-                    "origin_country": "US",
-                    "time_position": 123,
-                    "last_contact": 456,
-                    "longitude": 10.0,
-                    "latitude": 20.0,
-                    "baro_altitude": 1000,
-                    "on_ground": False,
-                    "velocity": 200,
-                    "heading": 90,
-                    "vertical_rate": 5
-                }]
+                expected = [
+                    {
+                        "icao24": "abc123",
+                        "callsign": "TEST",
+                        "origin_country": "US",
+                        "time_position": 123,
+                        "last_contact": 456,
+                        "longitude": 10.0,
+                        "latitude": 20.0,
+                        "baro_altitude": 1000,
+                        "on_ground": False,
+                        "velocity": 200,
+                        "heading": 90,
+                        "vertical_rate": 5,
+                    }
+                ]
                 assert result == expected
 
     def test_get_aircraft_by_countries_success(self, api):
         """Успешное получение для нескольких стран"""
-        with patch.object(api, 'get_aircraft_by_country') as mock_get:
-            mock_get.side_effect = [
-                [{"icao24": "abc1", "callsign": "FLT1"}],
-                [{"icao24": "abc2", "callsign": "FLT2"}]
-            ]
+        with patch.object(api, "get_aircraft_by_country") as mock_get:
+            mock_get.side_effect = [[{"icao24": "abc1", "callsign": "FLT1"}], [{"icao24": "abc2", "callsign": "FLT2"}]]
 
-            with patch('builtins.print') as mock_print:
+            with patch("builtins.print") as mock_print:
                 result = api.get_aircraft_by_countries(["Russia", "USA"])
 
                 expected = {
                     "Russia": [{"icao24": "abc1", "callsign": "FLT1"}],
-                    "USA": [{"icao24": "abc2", "callsign": "FLT2"}]
+                    "USA": [{"icao24": "abc2", "callsign": "FLT2"}],
                 }
                 assert result == expected
                 assert mock_print.call_count == 4
 
     def test_get_aircraft_by_countries_empty(self, api):
         """Пустой список стран"""
-        with patch('builtins.print') as mock_print:
+        with patch("builtins.print") as mock_print:
             result = api.get_aircraft_by_countries([])
 
             assert result == {}

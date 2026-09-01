@@ -4,7 +4,7 @@ from src.create_database import CreateDatabase
 
 
 class TestCreateDatabase:
-    @patch('src.create_database.psycopg2.connect')
+    @patch("src.create_database.psycopg2.connect")
     def test_init_connection(self, mock_connect):
         """Тест: подключение к БД"""
         mock_conn = Mock()
@@ -17,7 +17,7 @@ class TestCreateDatabase:
         assert db.conn is not None
         assert db.cursor is not None
 
-    @patch('src.create_database.psycopg2.connect')
+    @patch("src.create_database.psycopg2.connect")
     def test_create_tables(self, mock_connect):
         """Тест: создание таблиц"""
         mock_conn = Mock()
